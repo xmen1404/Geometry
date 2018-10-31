@@ -40,7 +40,7 @@ namespace Geometry{
         return {a, b, c};
     }
     
-    bool check1(point l, point r, point p)    {
+    bool check(point l, point r, point p)    { // check if the segment can eat the point p or not 
         if(l.x == r.x) return (p.y >= min(l.y, r.y) && p.y <= max(l.y, r.y));
         if(l.y == r.y) return (p.x >= min(l.x, r.x) && p.x <= max(l.x, r.x));
         line cur = getLine(l, r);
