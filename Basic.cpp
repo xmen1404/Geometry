@@ -3,6 +3,7 @@ using namespace std;
 
 struct point    {
     int x, y;
+    point(int x = 0, int y = 0) :x(x), y(y) {}
     double norm() {
         return x * x + y * y;
     }
@@ -18,7 +19,7 @@ struct circle{
 
 namespace Geometry{
     double dist(point a, point b) {
-        return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+        return sqrtl((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
     bool areParallel(line l1, line l2)  {
         return (l1.a * l2.b == l1.b * l2.a);
@@ -31,13 +32,25 @@ namespace Geometry{
         p = point{dx/d, dy/d};
         return true;
     }
-    line getLine(point p1, point p2)  {
-        if(p1.x == p2.x) return {1, 0, -p1.x};
-        if(p1.y == p2.y) return {0, 1, -p1.y};
-        double b = (p1.x - p2.x) / (p2.y - p1.y);
-        double c = (p1.y * p2.x - p1.x * p2.y) / (p2.y - p1.y);
-        return {1, b, c};
+    
+    line getLine(point p1, point p2)    {
+        double a = p2.y - p1.y;
+        double b = p1.x - p2.x;
+        double c = a * p1.x + b * p1.y;
+        return {a, b, c};
     }
+    
+    bool check1(point l, point r, point p)    {
+        if(l.x == r.x) return (p.y >= min(l.y, r.y) && p.y <= max(l.y, r.y));
+        if(l.y == r.y) return (p.x >= min(l.x, r.x) && p.x <= max(l.x, r.x));
+        line cur = getLine(l, r);
+        cur.a /= cur.b; cur.c /= cur.b;
+        cur.a = -cur.a; cur.c = -cur.c;
+        point p1 = {l.x + 1, l.y - cur.a};
+        point p2 = {r.x + 1, r.y - cur.a};
+        return (ccw(p - l, p1 - l) * ccw(p - r, p2 - r) <= 0);
+    }
+    
     point getCircumcircle(point a, point b, point c)    {
         double d = a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y);
         double dx = a.norm() * (b.y - c.y) + b.norm() * (c.y - a.y) + c.norm() * (a.y - b.y) / d;
